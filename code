@@ -1,0 +1,174 @@
+Create table branch(
+branch_number number (6),
+opening_date date ,
+constraint BR_PK primary key(branch_number));
+
+Create table branch_location(
+branch_number number (6) ,
+location varchar2(30) ,
+constraint BL_fK foreign key (branch_number) references branch(branch_number),
+constraint BL_PK primary key(branch_number, location));
+
+Create table employee(
+employee_id varchar2(10) primary key ,
+name varchar2(15),
+nationality varchar2(20) ,
+date_of_employment date ,
+salary number (8),
+branch_number number (6),
+constraint EM_fK foreign key (branch_number) references branch(branch_number));
+
+Create table schedule (
+shNo VARCHAR2(11) CONSTRAINTS sh_PK PRIMARY key,
+meal VARCHAR2(15),
+sendoff_time VARCHAR2(15),
+entry_time VARCHAR2(15),
+play_time VARCHAR2(15),
+sleep_time VARCHAR2(15),
+meals_time VARCHAR2(15));
+
+Create table child( child_id varchar2 (10) ,
+name varchar2(15),
+DOB date ,
+health_condition VARCHAR2(20), allergies varchar2(20) ,
+gender char (1) CHECK(gender in('M','F')),
+EM_id varchar2(10) , ShNo VARCHAR2(11),
+CONSTRAINTS ch_PK PRIMARY key (child_id) ,
+CONSTRAINTS ch_FK foreign key (EM_id) REFERENCES employee
+(employee_id),
+CONSTRAINTS ch_FK1 foreign key(ShNo) REFERENCES schedule(ShNo));
+
+Create table parent(
+parent_id varchar2(10),
+child_id varchar2(10),
+phone_number number(10),
+name varchar2(15),
+branch_number number(6),
+fee number(7),
+constraint PA1_fK foreign key (child_id) references child(child_id),
+constraint PA2_fK foreign key (branch_number) references branch(branch_number),
+constraint PA_PK primary key(parent_id , child_id));
+
+Create table Class(
+class_number number(5) CONSTRAINTS cl_PK PRIMARY key,
+number_of_children number(15),
+ShNo VARCHAR2(11),
+CONSTRAINTS cl_FK FOREIGN KEY (ShNo) REFERENCES schedule(shNo));
+
+
+Insert into branch values(11,'12-feb-2018');
+Insert into branch values(22,'21-nov-2019');
+Insert into branch values(33,'30-jan-2020');
+Insert into branch values(44,'14-aug-2021');
+
+Insert into employee values(42464,'Nora Ahmad','Saudi','13-dec-2019','6000','22');
+Insert into employee values(40094,'Reema Saleh','Saudi','30-may-2018','5000','11');
+Insert into employee values(45633,'Fatima Ameer','Pakistani','20-oct-2021','4000','44');
+Insert into employee values(43786,'Emma Alex','American','30-july-2020','3000','33');
+
+Insert into schedule values ('Sh1','Vegan','3:00','8:00','9:00','11:00','1:00');
+Insert into schedule values('Sh2', 'Vegetarian', '5:00', '10:00', '11:00', '1:00','3:00');
+Insert into schedule values('Sh3','Pescatarian','6:00','12:00','1:00','3:00','4:00');
+Insert into schedule values('Sh4','Normal','6:00','12:00','1:00','3:00','4:00');
+
+
+Insert into Class values('1','22','Sh1');
+Insert into Class values('2','15','Sh3');
+Insert into Class values('3','20','Sh2');
+Insert into Class values(4,22,'Sh1');
+
+insert into child values (1110001,'Leila khaled','23-aug- 2019','diabetes','meat','F',42464, 'Sh1' );
+insert into child values (1110002,'Rasha Mohammed','14-sep- 2019','asthma','nuts','F',40094, 'Sh3');
+insert into child values(1110003,'Tala turki','09-feb-2020','do not have','berry','F',45633, 'Sh4');
+insert into child values(1110004,'Yazeed Ali','17-dec- 2020','eczema','seafood','M',43786, 'Sh2');
+insert into child values (1110005,'sara Ahmad','28-jan- 2019','asthma','fish','F',40094, 'Sh3');
+insert into child values(1110006,'fahad faisal','22-mar-2019','do not have','do not have','M',40094, 'Sh4');
+insert into child values(1110007,'lama sultan','15-oct-2020','do not have','banana','F',40094, 'Sh3');
+
+Insert into branch_location values(11,'KSA-riyadh-alrayaan');
+Insert into branch_location values(22,' KSA-riyadh- aleaqiq');
+Insert into branch_location values(33,' KSA-riyadh-almalqaa');
+Insert into branch_location values(44,' KSA-riyadh-alfalah');
+
+
+select name
+from child
+where name Like 'L%';
+
+select *
+from child
+where allergies='seafood' or allergies='meat';
+
+select EM_id, count(gender) 
+from child
+where gender='F'
+group by EM_id
+having count(gender)>2;
+
+select child_id
+from child
+where DOB >'01-jan-2020' 
+group by child_id;
+
+
+Select class_number, number_of_children 
+From Class
+Where number_of_children>20;
+
+
+Select count(class_number), SHNO 
+From Class
+Group by SHNO;
+
+
+Select SHNO, ENTRY_TIME 
+From schedule
+Where ENTRY_TIME= '12:00';
+
+select branch_number , opening_date 
+from branch
+where opening_date < '19-jan-2020';
+
+
+select *
+from branch
+where opening_date between '10-feb-2018' and '30-jan-2020';
+
+
+select branch_number, opening_date 
+from branch
+where branch_number > 33 and opening_date = '14-aug-2021';
+
+SELECT branch_number, count(opening_date)
+FROM branch
+WHERE opening_date >='01-jan-2003' OR opening_date<'01-Feb- 2003'
+GROUP BY branch_number;
+
+
+SELECT avg(salary)
+FROM employee
+where salary>4000;
+
+
+select parent_id, branch_number 
+from parent
+where branch_number = 22;
+
+
+select max(FEE)
+from parent;
+
+select parent_id, child_id, phone_number 
+from parent
+where phone_number = 0545678901;
+
+SELECT COUNT(nationality)
+FROM employee
+where nationality = 'Saudi';
+
+
+SELECT sum(salary)
+FROM employee
+where salary>=4000 having sum(salary)>2000;
+
+
